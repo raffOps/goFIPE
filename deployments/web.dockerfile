@@ -3,4 +3,4 @@ WORKDIR /app
 COPY go.* ./
 RUN go mod download
 COPY cmd ./cmd
-CMD go run cmd/main.go
+CMD go run cmd/gofipe/main.go

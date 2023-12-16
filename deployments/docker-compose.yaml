@@ -1,9 +1,11 @@
 version: '3'
 services:
   web:
+    env_file:
+      - ../configs/dev.env
     build:
       context: ./..
-      dockerfile: ./build/web.dockerfile
+      dockerfile: ./deployments/web.dockerfile
     ports:
       - "8080:8080"
     volumes:
@@ -17,10 +19,8 @@ services:
       - postgres
   postgres:
     image: "postgres:15"
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=root
+    env_file:
+      - ../configs/dev.env
     ports:
       - "5432:5432"
     volumes:
