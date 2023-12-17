@@ -24,10 +24,10 @@ func init() {
 func TestGetHealthCheck(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET("/heath-check", GetHealthCheck)
+	router.GET("/health-check", GetHealthCheck)
 	w := httptest.NewRecorder()
 
-	req, _ := http.NewRequest("GET", "/heath-check", nil)
+	req, _ := http.NewRequest("GET", "/health-check", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)

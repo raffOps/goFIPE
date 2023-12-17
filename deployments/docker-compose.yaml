@@ -11,7 +11,7 @@ services:
     volumes:
       - ../cmd:/app/cmd
     healthcheck:
-      test: curl --fail http://localhost:8080/heath-check || exit 1
+      test: curl --fail http://localhost:8080/health-check || exit 1
       interval: 20s
       timeout: 10s
       retries: 1
