@@ -2,6 +2,6 @@ package models
 
 import "gorm.io/gorm"
 
-type Teste struct {
+type Test struct {
 	gorm.Model
 }

@@ -8,5 +8,6 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.GET("/heath-check", controllers.GetHealthCheck)
+	r.POST("/veiculo", controllers.CreateVeiculo)
 	return r
 }
