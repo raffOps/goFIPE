@@ -12,13 +12,13 @@ func GetHealthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "api up"})
 }
 
-func CreateVeiculo(c *gin.Context) {
-	var veiculo models.Veiculo
-	if err := c.ShouldBindJSON(&veiculo); err != nil {
-		log.Println("error binding json", err)
+func CreateVehicle(c *gin.Context) {
+	var vehicles models.Vehicle
+	if err := c.ShouldBindJSON(&vehicles); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	result := database.DB.Create(&veiculo)
+	result := database.DB.Create(&vehicles)
 	log.Println("Error:", result.Error, "Rows affected:", result.RowsAffected)
-	c.JSON(http.StatusCreated, gin.H{"id": veiculo.ID})
+	c.JSON(http.StatusCreated, gin.H{"id": vehicles.ID})
 }

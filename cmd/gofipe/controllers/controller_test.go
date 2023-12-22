@@ -19,6 +19,7 @@ func init() {
 	os.Setenv("POSTGRES_PASSWORD", "root")
 	os.Setenv("POSTGRES_DB", "gofipe_test")
 	database.ConnectToDB()
+	gin.SetMode(gin.TestMode)
 }
 
 func TestGetHealthCheck(t *testing.T) {
@@ -34,46 +35,121 @@ func TestGetHealthCheck(t *testing.T) {
 	assert.Equal(t, "{\"message\":\"api up\"}", w.Body.String())
 }
 
-func TestCreateVeiculo(t *testing.T) {
-
-	gin.SetMode(gin.TestMode)
+func TestCreateVehicle(t *testing.T) {
 	router := gin.Default()
-	router.POST("/veiculo", CreateVeiculo)
-	w := httptest.NewRecorder()
+	router.POST("/veiculo", CreateVehicle)
 
-	var testCases = []models.Veiculo{
+	var testCases = []struct {
+		input      []byte
+		wantedCode int
+	}{
 		{
-			Ano:              2023,
-			Mes:              10,
-			Valor:            80877.0,
-			Marca:            "Renault",
-			Modelo:           "STEPWAY Intense Flex 1.6 16V  Aut.",
-			AnoModelo:        "2022",
-			Combustivel:      "Gasolina",
-			CodigoFipe:       "025282-4",
-			MesReferencia:    202311,
-			TipoVeiculo:      1,
-			SiglaCombustivel: "G",
-			DataConsulta:     "2023-12-17 17:23:17",
+			input: []byte(`{
+				"ano":               2023,
+				"mes":               10,
+				"valor":             80877.0,
+				"marca":             "Renault",
+				"modelo":            "STEPWAY Intense Flex 1.6 16V  Aut.",
+				"ano_modelo":        "2022",
+				"combustivel":       "Gasolina",
+				"codigo_fipe":       "025282-4",
+				"mes_referencia":    202311,
+				"tipo_veiculo":      1,
+				"sigla_combustivel": "G",
+				"data_consulta":     "2023-12-17 17:23:17"
+			}`),
+			wantedCode: http.StatusCreated,
+		},
+		{
+			input: []byte(`{
+				"ano":               2023,
+				"mes":               10,
+				"valor":             80877,
+				"marca":             "foo",
+				"modelo":            "STEPWAY Intense Flex 1.6 16V  Aut.",
+				"ano_modelo":        "2022",
+				"combustivel":       "Gasolina",
+				"codigo_fipe":       "025282-4",
+				"mes_referencia":    202311,
+				"tipo_veiculo":      1,
+				"sigla_combustivel": "G",
+				"data_consulta":     "2023-12-17 17:23:17"
+			}`),
+			wantedCode: http.StatusCreated,
+		},
+		{
+			input: []byte(`{
+				"ano":               "foo",
+				"mes":               10,
+				"valor":             80877.0,
+				"marca":             "Renault",
+				"modelo":            "STEPWAY Intense Flex 1.6 16V  Aut.",
+				"ano_modelo":        "2022",
+				"combustivel":       "Gasolina",
+				"codigo_fipe":       "025282-4",
+				"mes_referencia":    "bar"
+				"tipo_veiculo":      1,
+				"sigla_combustivel": "G",
+				"data_consulta":     "2023-12-17 17:23:17"
+			}`),
+			wantedCode: http.StatusBadRequest,
+		},
+
+		{
+			input: []byte(`{
+				"ano":               "foo",
+				"mes":               10,
+				"valor":             80877.0,
+				"marca":             "Renault",
+				"modelo":            "STEPWAY Intense Flex 1.6 16V  Aut.",
+				"ano_modelo":        "2022",
+				"combustivel":       "Gasolina",
+				"codigo_fipe":       "025282-4",
+				"mes_referencia":    "bar"
+				"tipo_veiculo":      1,
+				"sigla_combustivel": "G",
+				"data_consulta":     "2023-12-17 17:23:17"
+			}`),
+			wantedCode: http.StatusBadRequest,
+		},
+		{
+			input: []byte(`{
+				"ano":               2023,
+				"mes":               10,
+				"valor":             true,
+				"marca":             "Renault",
+				"modelo":            "STEPWAY Intense Flex 1.6 16V  Aut.",
+				"ano_modelo":        "2022",
+				"combustivel":       "Gasolina",
+				"codigo_fipe":       "025282-4",
+				"mes_referencia":    202311,
+				"tipo_veiculo":      1,
+				"sigla_combustivel": "G",
+				"data_consulta":     "2023-12-17 17:23:17"
+			}`),
+			wantedCode: http.StatusBadRequest,
 		},
 	}
 
-	for _, testCase := range testCases {
-		marshalled, _ := json.Marshal(testCase)
-		var got models.Veiculo
-
-		req, _ := http.NewRequest("POST", "/veiculo", bytes.NewReader(marshalled))
+	for index, testCase := range testCases {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("POST", "/veiculo", bytes.NewReader(testCase.input))
 		router.ServeHTTP(w, req)
 
-		assert.Equal(t, 201, w.Code)
-		database.DB.FirstOrCreate(&got)
-		assert.Equal(t, got.Ano, testCase.Ano)
-		assert.Equal(t, got.Mes, testCase.Mes)
-		assert.Equal(t, got.Valor, testCase.Valor)
-		assert.Equal(t, got.Marca, testCase.Marca)
-		assert.Equal(t, got.Modelo, testCase.Modelo)
+		assert.Equal(t, testCase.wantedCode, w.Code, "Test %d", index)
+		if testCase.wantedCode == 201 {
+			got := models.Vehicle{}
+			defer database.DB.Unscoped().Delete(&got)
 
-		database.DB.Unscoped().Delete(&got)
+			unmarshelledInput := models.Vehicle{}
+			json.Unmarshal(testCase.input, &unmarshelledInput)
+			database.DB.FirstOrCreate(&got)
+			assert.Equal(t, got.AnoModelo, unmarshelledInput.AnoModelo)
+			assert.Equal(t, got.Ano, unmarshelledInput.Ano)
+			assert.Equal(t, got.Mes, unmarshelledInput.Mes)
+			assert.Equal(t, got.Valor, unmarshelledInput.Valor)
+			assert.Equal(t, got.Marca, unmarshelledInput.Marca)
+			database.DB.Unscoped().Delete(&got)
+		}
 	}
-
 }
