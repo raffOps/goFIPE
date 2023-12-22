@@ -30,7 +30,7 @@ func ConnectToDB() {
 	if err != nil {
 		log.Panic("Unable to connect to database")
 	}
-	err = DB.AutoMigrate(&models.Test{}, &models.Veiculo{})
+	err = DB.AutoMigrate(&models.Test{}, &models.Vehicle{})
 	if err != nil {
 		log.Panic(err)
 	}

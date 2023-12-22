@@ -2,7 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
-type Veiculo struct {
+type Vehicle struct {
 	gorm.Model
 	Ano              uint16  `json:"ano"`
 	Mes              uint8   `json:"mes"`
