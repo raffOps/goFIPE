@@ -35,3 +35,7 @@ func ConnectToDB() {
 		log.Panic(err)
 	}
 }
+
+func TruncateTable(tableName string) {
+	DB.Exec(fmt.Sprintf("TRUNCATE TABLE %s;", tableName))
+}
