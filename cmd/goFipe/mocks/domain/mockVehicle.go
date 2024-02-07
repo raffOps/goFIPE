@@ -9,6 +9,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	domain "github.com/raffops/gofipe/cmd/goFipe/domain"
+	errs "github.com/raffops/gofipe/cmd/goFipe/errs"
 )
 
 // MockVehicleService is a mock of VehicleService interface.
@@ -35,33 +36,45 @@ func (m *MockVehicleService) EXPECT() *MockVehicleServiceMockRecorder {
 }
 
 // GetVehicleByFipeCode mocks base method.
-func (m *MockVehicleService) GetVehicleByFipeCode(arg0 int) ([]domain.Vehicle, error) {
+func (m *MockVehicleService) GetVehicleByFipeCode(fipeCode int, orderBy []domain.OrderBy, pagination domain.Pagination) ([]domain.Vehicle, *errs.AppError) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetVehicleByFipeCode", arg0)
+	ret := m.ctrl.Call(m, "GetVehicleByFipeCode", fipeCode, orderBy, pagination)
 	ret0, _ := ret[0].([]domain.Vehicle)
-	ret1, _ := ret[1].(error)
+	ret1, _ := ret[1].(*errs.AppError)
 	return ret0, ret1
 }
 
 // GetVehicleByFipeCode indicates an expected call of GetVehicleByFipeCode.
-func (mr *MockVehicleServiceMockRecorder) GetVehicleByFipeCode(arg0 interface{}) *gomock.Call {
+func (mr *MockVehicleServiceMockRecorder) GetVehicleByFipeCode(fipeCode, orderBy, pagination interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVehicleByFipeCode", reflect.TypeOf((*MockVehicleService)(nil).GetVehicleByFipeCode), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVehicleByFipeCode", reflect.TypeOf((*MockVehicleService)(nil).GetVehicleByFipeCode), fipeCode, orderBy, pagination)
 }
 
-// GetVehicleByReferenceMonth mocks base method.
-func (m *MockVehicleService) GetVehicleByReferenceMonth(arg0 int) ([]domain.Vehicle, error) {
+// GetVehicleByReferenceYearMonth mocks base method.
+func (m *MockVehicleService) GetVehicleByReferenceYearMonth(year, month int, orderBy []domain.OrderBy, pagination domain.Pagination) ([]domain.Vehicle, *errs.AppError) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetVehicleByReferenceMonth", arg0)
+	ret := m.ctrl.Call(m, "GetVehicleByReferenceYearMonth", year, month, orderBy, pagination)
 	ret0, _ := ret[0].([]domain.Vehicle)
-	ret1, _ := ret[1].(error)
+	ret1, _ := ret[1].(*errs.AppError)
 	return ret0, ret1
 }
 
-// GetVehicleByReferenceMonth indicates an expected call of GetVehicleByReferenceMonth.
-func (mr *MockVehicleServiceMockRecorder) GetVehicleByReferenceMonth(arg0 interface{}) *gomock.Call {
+// GetVehicleByReferenceYearMonth indicates an expected call of GetVehicleByReferenceYearMonth.
+func (mr *MockVehicleServiceMockRecorder) GetVehicleByReferenceYearMonth(year, month, orderBy, pagination interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVehicleByReferenceMonth", reflect.TypeOf((*MockVehicleService)(nil).GetVehicleByReferenceMonth), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVehicleByReferenceYearMonth", reflect.TypeOf((*MockVehicleService)(nil).GetVehicleByReferenceYearMonth), year, month, orderBy, pagination)
+}
+
+// InsertVehicles mocks base method.
+func (m *MockVehicleService) InsertVehicles(arg0 []domain.Vehicle, arg1 *errs.AppError) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "InsertVehicles", arg0, arg1)
+}
+
+// InsertVehicles indicates an expected call of InsertVehicles.
+func (mr *MockVehicleServiceMockRecorder) InsertVehicles(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertVehicles", reflect.TypeOf((*MockVehicleService)(nil).InsertVehicles), arg0, arg1)
 }
 
 // MockVehicleRepository is a mock of VehicleRepository interface.
@@ -87,32 +100,31 @@ func (m *MockVehicleRepository) EXPECT() *MockVehicleRepositoryMockRecorder {
 	return m.recorder
 }
 
-// GetVehicleByFipeCode mocks base method.
-func (m *MockVehicleRepository) GetVehicleByFipeCode(arg0 int) ([]domain.Vehicle, error) {
+// GetVehicle mocks base method.
+func (m *MockVehicleRepository) GetVehicle(conditions []domain.Condition, orderBy []domain.OrderBy, pagination domain.Pagination) ([]domain.Vehicle, *errs.AppError) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetVehicleByFipeCode", arg0)
+	ret := m.ctrl.Call(m, "GetVehicle", conditions, orderBy, pagination)
 	ret0, _ := ret[0].([]domain.Vehicle)
-	ret1, _ := ret[1].(error)
+	ret1, _ := ret[1].(*errs.AppError)
 	return ret0, ret1
 }
 
-// GetVehicleByFipeCode indicates an expected call of GetVehicleByFipeCode.
-func (mr *MockVehicleRepositoryMockRecorder) GetVehicleByFipeCode(arg0 interface{}) *gomock.Call {
+// GetVehicle indicates an expected call of GetVehicle.
+func (mr *MockVehicleRepositoryMockRecorder) GetVehicle(conditions, orderBy, pagination interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVehicleByFipeCode", reflect.TypeOf((*MockVehicleRepository)(nil).GetVehicleByFipeCode), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVehicle", reflect.TypeOf((*MockVehicleRepository)(nil).GetVehicle), conditions, orderBy, pagination)
 }
 
-// GetVehicleByReferenceMonth mocks base method.
-func (m *MockVehicleRepository) GetVehicleByReferenceMonth(arg0 int) ([]domain.Vehicle, error) {
+// InsertVehicles mocks base method.
+func (m *MockVehicleRepository) InsertVehicles(arg0 []domain.Vehicle) *errs.AppError {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetVehicleByReferenceMonth", arg0)
-	ret0, _ := ret[0].([]domain.Vehicle)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "InsertVehicles", arg0)
+	ret0, _ := ret[0].(*errs.AppError)
+	return ret0
 }
 
-// GetVehicleByReferenceMonth indicates an expected call of GetVehicleByReferenceMonth.
-func (mr *MockVehicleRepositoryMockRecorder) GetVehicleByReferenceMonth(arg0 interface{}) *gomock.Call {
+// InsertVehicles indicates an expected call of InsertVehicles.
+func (mr *MockVehicleRepositoryMockRecorder) InsertVehicles(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVehicleByReferenceMonth", reflect.TypeOf((*MockVehicleRepository)(nil).GetVehicleByReferenceMonth), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertVehicles", reflect.TypeOf((*MockVehicleRepository)(nil).InsertVehicles), arg0)
 }
