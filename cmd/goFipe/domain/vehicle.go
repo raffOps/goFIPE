@@ -20,21 +20,6 @@ type Vehicle struct {
 	MeanValue      float64
 }
 
-type Condition struct {
-	Column string
-	Value  interface{}
-}
-
-type Pagination struct {
-	Offset uint
-	Limit  uint
-}
-
-type OrderBy struct {
-	Column string
-	Order  string
-}
-
 type VehicleService interface {
 	GetVehicleByFipeCode(fipeCode int, orderBy []OrderBy, pagination Pagination) ([]Vehicle, *errs.AppError)
 	GetVehicleByReferenceYearMonth(year int, month int, orderBy []OrderBy, pagination Pagination) ([]Vehicle, *errs.AppError)
@@ -112,7 +97,7 @@ func GetDomainVehiclesExamples() []Vehicle {
 			Model:          "147 C/ CL",
 			YearModel:      "1991 Gasolina",
 			Authentication: "2",
-			MeanValue:      800,
+			MeanValue:      802,
 		},
 	}
 }

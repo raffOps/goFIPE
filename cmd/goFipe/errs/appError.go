@@ -68,3 +68,10 @@ func NewInvalidColumnError(message string) *AppError {
 		Code:    http.StatusBadRequest,
 	}
 }
+
+func NewUnprocessableEntityError(message string) *AppError {
+	return &AppError{
+		Message: message,
+		Code:    http.StatusBadRequest,
+	}
+}
