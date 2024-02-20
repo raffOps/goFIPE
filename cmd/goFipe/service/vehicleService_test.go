@@ -5,6 +5,7 @@ import (
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
 	"github.com/raffops/gofipe/cmd/goFipe/errs"
 	mock_domain "github.com/raffops/gofipe/cmd/goFipe/mocks/domain"
+	"github.com/raffops/gofipe/cmd/goFipe/port"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -20,7 +21,7 @@ func TestNewVehicleService(t *testing.T) {
 	t.Cleanup(ctrl.Finish)
 
 	type args struct {
-		vehicleRepo domain.VehicleRepository
+		vehicleRepo port.VehicleRepository
 	}
 
 	tests := []struct {
@@ -45,7 +46,7 @@ func TestNewVehicleService(t *testing.T) {
 
 func TestVehicleService_GetVehicleByFipeCode(t *testing.T) {
 	type fields struct {
-		vehicleRepo domain.VehicleRepository
+		vehicleRepo port.VehicleRepository
 	}
 	type args struct {
 		fipeCode   int
@@ -69,7 +70,7 @@ func TestVehicleService_GetVehicleByFipeCode(t *testing.T) {
 	// -------------------------------------------------
 	mockVehicleRepository.EXPECT().
 		GetVehicle(
-			[]domain.Condition{{Column: "fipe_code", Value: 1}},
+			[]domain.Condition{{Column: "fipe_code", Value: 1, Operator: "="}},
 			[]domain.OrderBy{},
 			domain.Pagination{},
 		).
@@ -89,7 +90,7 @@ func TestVehicleService_GetVehicleByFipeCode(t *testing.T) {
 	// -------------------------------------------------
 	mockVehicleRepository.EXPECT().
 		GetVehicle(
-			[]domain.Condition{{Column: "fipe_code", Value: 2}},
+			[]domain.Condition{{Column: "fipe_code", Value: 2, Operator: "="}},
 			[]domain.OrderBy{},
 			domain.Pagination{},
 		).
@@ -106,10 +107,10 @@ func TestVehicleService_GetVehicleByFipeCode(t *testing.T) {
 		want:    []domain.Vehicle{domainVehicleExamples[1], domainVehicleExamples[2]},
 		wantErr: nil,
 	})
-
+	// -------------------------------------------------
 	mockVehicleRepository.EXPECT().
 		GetVehicle(
-			[]domain.Condition{{Column: "fipe_code", Value: 3}},
+			[]domain.Condition{{Column: "fipe_code", Value: 3, Operator: "="}},
 			[]domain.OrderBy{},
 			domain.Pagination{},
 		).
@@ -142,7 +143,7 @@ func TestVehicleService_GetVehicleByFipeCode(t *testing.T) {
 
 func TestVehicleService_GetVehicleByReferenceMonth(t *testing.T) {
 	type fields struct {
-		vehicleRepo domain.VehicleRepository
+		vehicleRepo port.VehicleRepository
 	}
 	type args struct {
 		year       int
@@ -168,8 +169,8 @@ func TestVehicleService_GetVehicleByReferenceMonth(t *testing.T) {
 	mockVehicleRepository.EXPECT().
 		GetVehicle(
 			[]domain.Condition{
-				{Column: "year", Value: 2021},
-				{Column: "month", Value: 7},
+				{Column: "year", Value: 2021, Operator: "="},
+				{Column: "month", Value: 7, Operator: "="},
 			},
 			[]domain.OrderBy{},
 			domain.Pagination{},
@@ -188,12 +189,12 @@ func TestVehicleService_GetVehicleByReferenceMonth(t *testing.T) {
 		want:    []domain.Vehicle{domainVehicleExamples[2]},
 		wantErr: nil,
 	})
-
+	// -------------------------------------------------
 	mockVehicleRepository.EXPECT().
 		GetVehicle(
 			[]domain.Condition{
-				{Column: "year", Value: 2021},
-				{Column: "month", Value: 6},
+				{Column: "year", Value: 2021, Operator: "="},
+				{Column: "month", Value: 6, Operator: "="},
 			},
 			[]domain.OrderBy{},
 			domain.Pagination{},
@@ -212,12 +213,12 @@ func TestVehicleService_GetVehicleByReferenceMonth(t *testing.T) {
 		want:    []domain.Vehicle{domainVehicleExamples[0], domainVehicleExamples[1]},
 		wantErr: nil,
 	})
-
+	// -------------------------------------------------
 	mockVehicleRepository.EXPECT().
 		GetVehicle(
 			[]domain.Condition{
-				{Column: "year", Value: 2025},
-				{Column: "month", Value: 6},
+				{Column: "year", Value: 2025, Operator: "="},
+				{Column: "month", Value: 6, Operator: "="},
 			},
 			[]domain.OrderBy{},
 			domain.Pagination{},
@@ -237,12 +238,12 @@ func TestVehicleService_GetVehicleByReferenceMonth(t *testing.T) {
 		want:    nil,
 		wantErr: errs.NewNotFoundError("Vehicles not found for that reference month"),
 	})
-
+	// -------------------------------------------------
 	mockVehicleRepository.EXPECT().
 		GetVehicle(
 			[]domain.Condition{
-				{Column: "year", Value: 2021},
-				{Column: "month", Value: 8},
+				{Column: "year", Value: 2021, Operator: "="},
+				{Column: "month", Value: 8, Operator: "="},
 			},
 			[]domain.OrderBy{},
 			domain.Pagination{},
