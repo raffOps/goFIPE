@@ -96,6 +96,11 @@ func fetchVehiclesFromDb(v VehicleRepositoryPostgres,
 		}
 		return nil, errs.NewUnexpectedError("Unexpected database error")
 	}
+
+	if len(vehicles) == 0 {
+		return nil, errs.NewNotFoundError("Vehicles not found")
+	}
+
 	return vehicles, nil
 }
 
