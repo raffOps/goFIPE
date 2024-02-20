@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 	if !ok {
 		env = "dev"
 	}
-	errEnv := godotenv.Load(fmt.Sprintf("../configs/%s.env", env))
+	errEnv := godotenv.Load(fmt.Sprintf("../../configs/%s.env", env))
 	if errEnv != nil {
 		logger.Error(fmt.Sprintf("Error loading ../../config/%s.env", env))
 		os.Exit(1)
@@ -87,7 +87,6 @@ func startPostgres(pool *dockertest.Pool, network *dockertest.Network) (*dockert
 		},
 	})
 
-	_ = resource.GetHostPort("5432/tcp")
 	err = testPostgresConnection(pool)
 
 	if err != nil {
@@ -305,6 +304,23 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 				domainVehiclesOnDb[0],
 			},
 			wantError: nil,
+		},
+		{
+			name:   "NewNotFoundError",
+			fields: fields{conn: conn},
+			args: args{
+				conditions: []domain.Condition{
+					{
+						Column:   "fipe_code",
+						Operator: "=",
+						Value:    111111111,
+					},
+				},
+				orderBy:    []domain.OrderBy{},
+				pagination: domain.Pagination{Offset: 0, Limit: 10},
+			},
+			want:      nil,
+			wantError: errs.NewNotFoundError("Vehicles not found"),
 		},
 		{
 			name:   "year equal to 2021 and month equal to 8",
