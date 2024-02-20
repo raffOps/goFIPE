@@ -1,10 +1,10 @@
 package domain
 
 import (
-	"github.com/go-playground/validator/v10"
-	"github.com/raffops/gofipe/cmd/goFipe/errs"
 	"regexp"
 	"time"
+
+	"github.com/go-playground/validator/v10"
 )
 
 //go:generate mockgen -source vehicle.go -destination ../mocks/domain/mockVehicle.go
@@ -18,17 +18,6 @@ type Vehicle struct {
 	YearModel      string
 	Authentication string
 	MeanValue      float64
-}
-
-type VehicleService interface {
-	GetVehicleByFipeCode(fipeCode int, orderBy []OrderBy, pagination Pagination) ([]Vehicle, *errs.AppError)
-	GetVehicleByReferenceYearMonth(year int, month int, orderBy []OrderBy, pagination Pagination) ([]Vehicle, *errs.AppError)
-	InsertVehicles([]Vehicle, *errs.AppError)
-}
-
-type VehicleRepository interface {
-	GetVehicle(conditions []Condition, orderBy []OrderBy, pagination Pagination) ([]Vehicle, *errs.AppError)
-	InsertVehicles([]Vehicle) *errs.AppError
 }
 
 // Validate validates the vehicle struct
