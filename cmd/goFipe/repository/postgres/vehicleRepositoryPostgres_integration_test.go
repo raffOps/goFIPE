@@ -1,4 +1,4 @@
-package e2e
+package postgres
 
 import (
 	"fmt"
@@ -16,8 +16,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+)
 
-	postgresRepo "github.com/raffops/gofipe/cmd/goFipe/repository/postgres"
+const (
+	ConfigPath = "../../../../configs/%s.env"
 )
 
 func TestMain(m *testing.M) {
@@ -25,9 +27,9 @@ func TestMain(m *testing.M) {
 	if !ok {
 		env = "dev"
 	}
-	errEnv := godotenv.Load(fmt.Sprintf("../../configs/%s.env", env))
+	errEnv := godotenv.Load(fmt.Sprintf(ConfigPath, env))
 	if errEnv != nil {
-		logger.Error(fmt.Sprintf("Error loading ../../config/%s.env", env))
+		logger.Error(fmt.Sprintf(ConfigPath, env))
 		os.Exit(1)
 	}
 
@@ -151,27 +153,27 @@ func TestNewVehicleRepositoryPostgres(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *postgresRepo.VehicleRepositoryPostgres
+		want *VehicleRepositoryPostgres
 	}{
 		{
 			name: "Single test",
 			args: args{conn: conn},
-			want: &postgresRepo.VehicleRepositoryPostgres{Conn: conn},
+			want: &VehicleRepositoryPostgres{Conn: conn},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := postgresRepo.NewVehicleRepositoryPostgres(tt.args.conn)
+			got := NewVehicleRepositoryPostgres(tt.args.conn)
 			assert.Equal(t, got, tt.want)
 		})
 	}
 }
 
-func insertVehiclesOnDB(conn *gorm.DB) ([]postgresRepo.Vehicle, []domain.Vehicle) {
+func insertVehiclesOnDB(conn *gorm.DB) ([]Vehicle, []domain.Vehicle) {
 	domainVehicles := domain.GetDomainVehiclesExamples()
-	var vehicles []postgresRepo.Vehicle
+	var vehicles []Vehicle
 	for _, domainVehicle := range domainVehicles {
-		vehicle := postgresRepo.Vehicle{
+		vehicle := Vehicle{
 			Year:           domainVehicle.Year,
 			Month:          domainVehicle.Month,
 			FipeCode:       domainVehicle.FipeCode,
@@ -192,14 +194,14 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 		conn *gorm.DB
 	}
 	type args struct {
-		conditions []domain.Condition
-		orderBy    []domain.OrderBy
+		conditions []domain.WhereClause
+		orderBy    []domain.OrderByClause
 		pagination domain.Pagination
 	}
 
 	conn := postgresUtils.GetPostgresConnection()
 	t.Cleanup(func() { postgresUtils.ClosePostgresConnection(conn) })
-	conn.AutoMigrate(&postgresRepo.Vehicle{})
+	conn.AutoMigrate(&Vehicle{})
 	_, domainVehiclesOnDb := insertVehiclesOnDB(conn)
 
 	tests := []struct {
@@ -213,8 +215,8 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 			name:   "One Vehicle",
 			fields: fields{conn: conn},
 			args: args{
-				conditions: []domain.Condition{},
-				orderBy:    []domain.OrderBy{},
+				conditions: []domain.WhereClause{},
+				orderBy:    []domain.OrderByClause{},
 				pagination: domain.Pagination{Offset: 0, Limit: 1},
 			},
 			want:      []domain.Vehicle{domainVehiclesOnDb[0]},
@@ -224,8 +226,8 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 			name:   "Order by fipe code",
 			fields: fields{conn: conn},
 			args: args{
-				conditions: []domain.Condition{},
-				orderBy: []domain.OrderBy{
+				conditions: []domain.WhereClause{},
+				orderBy: []domain.OrderByClause{
 					{
 						Column: "fipe_code",
 						IsDesc: false,
@@ -245,8 +247,8 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 			name:   "Order desc by mean value",
 			fields: fields{conn: conn},
 			args: args{
-				conditions: []domain.Condition{},
-				orderBy: []domain.OrderBy{
+				conditions: []domain.WhereClause{},
+				orderBy: []domain.OrderByClause{
 					{
 						Column: "mean_value",
 						IsDesc: true,
@@ -266,8 +268,8 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 			name:   "Order asc by mean value offset 1 limit 2",
 			fields: fields{conn: conn},
 			args: args{
-				conditions: []domain.Condition{},
-				orderBy: []domain.OrderBy{
+				conditions: []domain.WhereClause{},
+				orderBy: []domain.OrderByClause{
 					{
 						Column: "mean_value",
 						IsDesc: false,
@@ -285,14 +287,14 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 			name:   "fipe_code equal to 1",
 			fields: fields{conn: conn},
 			args: args{
-				conditions: []domain.Condition{
+				conditions: []domain.WhereClause{
 					{
 						Column:   "fipe_code",
 						Operator: "=",
 						Value:    1,
 					},
 				},
-				orderBy: []domain.OrderBy{
+				orderBy: []domain.OrderByClause{
 					{
 						Column: "mean_value",
 						IsDesc: false,
@@ -309,14 +311,14 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 			name:   "NewNotFoundError",
 			fields: fields{conn: conn},
 			args: args{
-				conditions: []domain.Condition{
+				conditions: []domain.WhereClause{
 					{
 						Column:   "fipe_code",
 						Operator: "=",
 						Value:    111111111,
 					},
 				},
-				orderBy:    []domain.OrderBy{},
+				orderBy:    []domain.OrderByClause{},
 				pagination: domain.Pagination{Offset: 0, Limit: 10},
 			},
 			want:      nil,
@@ -326,7 +328,7 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 			name:   "year equal to 2021 and month equal to 8",
 			fields: fields{conn: conn},
 			args: args{
-				conditions: []domain.Condition{
+				conditions: []domain.WhereClause{
 					{
 						Column:   "year",
 						Operator: "=",
@@ -338,7 +340,7 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 						Value:    8,
 					},
 				},
-				orderBy:    []domain.OrderBy{},
+				orderBy:    []domain.OrderByClause{},
 				pagination: domain.Pagination{Offset: 0, Limit: 10},
 			},
 			want: []domain.Vehicle{
@@ -349,7 +351,7 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := postgresRepo.VehicleRepositoryPostgres{
+			v := VehicleRepositoryPostgres{
 				Conn: tt.fields.conn,
 			}
 			got, gotError := v.GetVehicle(tt.args.conditions, tt.args.orderBy, tt.args.pagination)

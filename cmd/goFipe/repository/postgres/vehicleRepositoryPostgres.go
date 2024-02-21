@@ -48,8 +48,8 @@ func NewVehicleRepositoryPostgres(conn *gorm.DB) *VehicleRepositoryPostgres {
 // If an error occurs during the fetch operation, it returns the error.
 // Otherwise, it converts the fetched vehicles to domain.Vehicle objects using the ToDomainVehicles function and returns them along with a nil error.
 func (v VehicleRepositoryPostgres) GetVehicle(
-	conditions []domain.Condition,
-	orderBy []domain.OrderBy,
+	conditions []domain.WhereClause,
+	orderBy []domain.OrderByClause,
 	pagination domain.Pagination) ([]domain.Vehicle, *errs.AppError) {
 	if err := validatePagination(pagination); err != nil {
 		return nil, err
@@ -64,8 +64,8 @@ func (v VehicleRepositoryPostgres) GetVehicle(
 }
 
 func fetchVehiclesFromDb(v VehicleRepositoryPostgres,
-	conditions []domain.Condition,
-	columnsToOrder []domain.OrderBy,
+	conditions []domain.WhereClause,
+	columnsToOrder []domain.OrderByClause,
 	pagination domain.Pagination) ([]Vehicle, *errs.AppError) {
 
 	var vehicles []Vehicle
@@ -149,7 +149,7 @@ func isValidJsonField(input interface{}, column string) bool {
 	typeOfInput := reflect.TypeOf(input)
 
 	for i := 0; i < typeOfInput.NumField(); i++ {
-		// Get the field, returns https://golang.org/pkg/reflect/#StructField
+		// GetByFipeCode the field, returns https://golang.org/pkg/reflect/#StructField
 		field := typeOfInput.Field(i)
 		jsonTag, ok := field.Tag.Lookup("json")
 		jsonTagList := strings.Split(jsonTag, ",")
