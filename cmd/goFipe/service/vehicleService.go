@@ -14,23 +14,36 @@ func NewVehicleService(vehicleRepo port.VehicleRepository) VehicleService {
 	return VehicleService{vehicleRepo: vehicleRepo}
 }
 
-func (v VehicleService) GetVehicleByFipeCode(fipeCode int,
-	orderBy []domain.OrderBy,
-	pagination domain.Pagination) ([]domain.Vehicle, *errs.AppError) {
-	conditions := []domain.Condition{{Column: "fipe_code", Value: fipeCode, Operator: "="}}
-	return v.vehicleRepo.GetVehicle(conditions, orderBy, pagination)
-}
+func (v VehicleService) GetVehicle(
+	where map[string]string,
+	orderBy map[string]bool,
+	offset int,
+	limit int) ([]domain.Vehicle, *errs.AppError) {
 
-func (v VehicleService) GetVehicleByReferenceYearMonth(
-	year int,
-	month int,
-	orderBy []domain.OrderBy,
-	pagination domain.Pagination) ([]domain.Vehicle, *errs.AppError) {
-
-	conditions := []domain.Condition{
-		{Column: "year", Value: year, Operator: "="},
-		{Column: "month", Value: month, Operator: "="},
+	var whereClauses []domain.WhereClause
+	for column, value := range where {
+		whereClauses = append(whereClauses, domain.WhereClause{
+			Column:   column,
+			Operator: "=",
+			Value:    value,
+		})
 	}
 
-	return v.vehicleRepo.GetVehicle(conditions, orderBy, pagination)
+	var orderByClauses []domain.OrderByClause
+	for column, isDesc := range orderBy {
+		orderByClauses = append(
+			orderByClauses,
+			domain.OrderByClause{Column: column, IsDesc: isDesc},
+		)
+	}
+
+	if limit == 0 {
+		limit = domain.MaxLimit
+	}
+	pagination := domain.Pagination{
+		Offset: offset,
+		Limit:  limit,
+	}
+
+	return v.vehicleRepo.GetVehicle(whereClauses, orderByClauses, pagination)
 }
