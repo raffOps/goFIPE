@@ -7,8 +7,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-//go:generate mockgen -source vehicle.go -destination ../mocks/domain/mockVehicle.go
-
 type Vehicle struct {
 	Year           int `validate:"required"`
 	Month          int `validate:"required"`
