@@ -75,3 +75,10 @@ func NewUnprocessableEntityError(message string) *AppError {
 		Code:    http.StatusBadRequest,
 	}
 }
+
+func NewNotImplemented(message string) *AppError {
+	return &AppError{
+		Message: message,
+		Code:    http.StatusNotImplemented,
+	}
+}
