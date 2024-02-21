@@ -1,6 +1,8 @@
 package domain
 
-type Condition struct {
+const MaxLimit = 100
+
+type WhereClause struct {
 	Column   string
 	Operator string
 	Value    interface{}
@@ -11,7 +13,7 @@ type Pagination struct {
 	Limit  int
 }
 
-type OrderBy struct {
+type OrderByClause struct {
 	Column string
 	IsDesc bool
 }
