@@ -76,9 +76,16 @@ func NewUnprocessableEntityError(message string) *AppError {
 	}
 }
 
-func NewNotImplemented(message string) *AppError {
+func NewNotImplementedError(message string) *AppError {
 	return &AppError{
 		Message: message,
 		Code:    http.StatusNotImplemented,
+	}
+}
+
+func NewBadRequestError(message string) *AppError {
+	return &AppError{
+		Message: message,
+		Code:    http.StatusBadRequest,
 	}
 }

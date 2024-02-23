@@ -2,11 +2,11 @@ package postgres
 
 import (
 	"fmt"
+	"github.com/raffops/gofipe/cmd/goFipe/utils"
 	"log"
 	"os"
 	"testing"
 
-	"github.com/joho/godotenv"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	postgresUtils "github.com/raffops/gofipe/cmd/goFipe/database/postgres"
@@ -18,20 +18,8 @@ import (
 	"gorm.io/gorm"
 )
 
-const (
-	ConfigPath = "../../../../configs/%s.env"
-)
-
 func TestMain(m *testing.M) {
-	env, ok := os.LookupEnv("ENV")
-	if !ok {
-		env = "dev"
-	}
-	errEnv := godotenv.Load(fmt.Sprintf(ConfigPath, env))
-	if errEnv != nil {
-		logger.Error(fmt.Sprintf(ConfigPath, env))
-		os.Exit(1)
-	}
+	utils.LoadEnvVariables()
 
 	var errPool error
 	pool, errPool := dockertest.NewPool("")

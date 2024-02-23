@@ -2,9 +2,10 @@ package postgres
 
 import (
 	"fmt"
+	"os"
+
 	postgresDb "gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"os"
 )
 
 // sanityCheck checks if the environment variables are set.

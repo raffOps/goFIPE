@@ -2,10 +2,11 @@ package postgres
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
 	"github.com/raffops/gofipe/cmd/goFipe/errs"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_isValidField(t *testing.T) {

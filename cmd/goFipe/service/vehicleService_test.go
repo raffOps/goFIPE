@@ -1,13 +1,14 @@
 package service
 
 import (
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
 	"github.com/raffops/gofipe/cmd/goFipe/errs"
 	mock_port "github.com/raffops/gofipe/cmd/goFipe/mocks"
 	"github.com/raffops/gofipe/cmd/goFipe/port"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func getMockVehicleRepository(t *testing.T) (*mock_port.MockVehicleRepository, *gomock.Controller) {
@@ -232,9 +233,9 @@ func TestVehicleService_GetVehicle(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		mockVehicleRepository, ctrl := getMockVehicleRepository(t)
-		t.Cleanup(ctrl.Finish)
 		t.Run(tt.name, func(t *testing.T) {
+			mockVehicleRepository, ctrl := getMockVehicleRepository(t)
+			t.Cleanup(ctrl.Finish)
 			tt.fields.vehicleRepo(mockVehicleRepository)
 			v := VehicleService{vehicleRepo: mockVehicleRepository}
 			got, err := v.GetVehicle(tt.args.where, tt.args.orderBy, tt.args.offset, tt.args.limit)

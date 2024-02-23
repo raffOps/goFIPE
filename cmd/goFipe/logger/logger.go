@@ -1,9 +1,10 @@
 package logger
 
 import (
+	"os"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
 )
 
 var log *zap.Logger
@@ -12,12 +13,12 @@ func init() {
 	var err error
 	var config zap.Config
 	var encoderConfig zapcore.EncoderConfig
-	if os.Getenv("TEST_MODE") == "1" {
-		config = zap.NewDevelopmentConfig()
-		encoderConfig = zap.NewDevelopmentEncoderConfig()
-	} else {
+	if os.Getenv("ENV") == "PRD" {
 		config = zap.NewProductionConfig()
 		encoderConfig = zap.NewProductionEncoderConfig()
+	} else {
+		config = zap.NewDevelopmentConfig()
+		encoderConfig = zap.NewDevelopmentEncoderConfig()
 	}
 
 	encoderConfig.TimeKey = "timestamp"
