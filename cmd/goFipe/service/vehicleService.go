@@ -1,8 +1,10 @@
 package service
 
 import (
+	"fmt"
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
 	"github.com/raffops/gofipe/cmd/goFipe/errs"
+	"github.com/raffops/gofipe/cmd/goFipe/logger"
 	"github.com/raffops/gofipe/cmd/goFipe/port"
 )
 
@@ -19,6 +21,14 @@ func (v VehicleService) GetVehicle(
 	orderBy map[string]bool,
 	offset int,
 	limit int) ([]domain.Vehicle, *errs.AppError) {
+
+	logger.Info("GetVehicle service called",
+
+		logger.String("where", fmt.Sprint(where)),
+		logger.String("orderBy", fmt.Sprint(orderBy)),
+		logger.Int("offset", offset),
+		logger.Int("limit", limit),
+	)
 
 	var whereClauses []domain.WhereClause
 	for column, value := range where {
