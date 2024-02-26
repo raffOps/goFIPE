@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
@@ -18,15 +19,14 @@ type VehicleRepositoryPostgres struct {
 }
 
 type Vehicle struct {
-	*gorm.Model
 	Year           int     `gorm:"index:idx_year" json:"year,omitempty"`
 	Month          int     `gorm:"index:idx_month" json:"month,omitempty"`
-	FipeCode       int     `gorm:"index:idx_fipe_code" json:"fipe_code,omitempty"`
+	FipeCode       string  `gorm:"index:idx_fipe_code" json:"fipe_code,omitempty"`
 	Brand          string  `json:"brand" json:"brand,omitempty"`
 	VehicleModel   string  `json:"vehicle_model,omitempty"`
 	YearModel      string  `json:"year_model,omitempty"`
 	Authentication string  `json:"authentication,omitempty"`
-	MeanValue      float64 `json:"mean_value,omitempty"`
+	MeanValue      float32 `json:"mean_value,omitempty"`
 }
 
 // NewVehicleRepositoryPostgres initializes a new instance of VehicleRepositoryPostgres with the given database connection.
@@ -86,11 +86,11 @@ func fetchVehiclesFromDb(v VehicleRepositoryPostgres,
 		}
 	}
 
-	offset := fetch.Offset(pagination.Offset).Limit(pagination.Limit)
+	fetch = fetch.Offset(pagination.Offset).Limit(pagination.Limit)
 
-	err := offset.Find(&vehicles).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+	result := fetch.Find(&vehicles)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, errs.NewNotFoundError("Vehicles not found")
 		}
 		return nil, errs.NewUnexpectedError("Unexpected database error")
@@ -108,11 +108,13 @@ func ToDomainVehicles(vehicles []Vehicle) []domain.Vehicle {
 	var domainVehicles []domain.Vehicle
 
 	for _, vehicle := range vehicles {
+		fipeCode, _ := strconv.Atoi(strings.Replace("-", vehicle.FipeCode, "", 1))
+
 		domainVehicles = append(domainVehicles,
 			domain.Vehicle{
 				Year:           vehicle.Year,
 				Month:          vehicle.Month,
-				FipeCode:       vehicle.FipeCode,
+				FipeCode:       fipeCode,
 				Brand:          vehicle.Brand,
 				Model:          vehicle.VehicleModel,
 				YearModel:      vehicle.YearModel,
