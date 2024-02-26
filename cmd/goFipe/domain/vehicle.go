@@ -15,7 +15,7 @@ type Vehicle struct {
 	Model          string
 	YearModel      string
 	Authentication string
-	MeanValue      float64
+	MeanValue      float32
 }
 
 // Validate validates the vehicle struct
