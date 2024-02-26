@@ -46,3 +46,11 @@ func Error(message string, fields ...zap.Field) {
 func Fatal(message string, fields ...zap.Field) {
 	log.Fatal(message, fields...)
 }
+
+func String(key string, value string) zap.Field {
+	return zap.String(key, value)
+}
+
+func Int(key string, value int) zap.Field {
+	return zap.Int(key, value)
+}
