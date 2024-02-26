@@ -13,8 +13,6 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-const MaxLimit = 100
-
 type VehicleRepositoryPostgres struct {
 	Conn *gorm.DB
 }
@@ -64,32 +62,33 @@ func (v VehicleRepositoryPostgres) GetVehicle(
 }
 
 func fetchVehiclesFromDb(v VehicleRepositoryPostgres,
-	conditions []domain.WhereClause,
-	columnsToOrder []domain.OrderByClause,
+	whereClauses []domain.WhereClause,
+	orderByClauses []domain.OrderByClause,
 	pagination domain.Pagination) ([]Vehicle, *errs.AppError) {
 
 	var vehicles []Vehicle
 	fetch := v.Conn.Omit("ID", "CreatedAt", "UpdatedAt", "DeletedAt")
 
-	for _, condition := range conditions {
-		if isValidJsonField(Vehicle{}, condition.Column) {
-			query := fmt.Sprintf("%s %s ?", condition.Column, condition.Operator)
-			fetch = fetch.Where(query, condition.Value)
+	for _, whereClause := range whereClauses {
+		if isValidJsonField(Vehicle{}, whereClause.Column) {
+			query := fmt.Sprintf("%s %s ?", whereClause.Column, whereClause.Operator)
+			fetch = fetch.Where(query, whereClause.Value)
 		}
 	}
 
-	for _, column := range columnsToOrder {
-		if isValidJsonField(Vehicle{}, column.Column) {
+	for _, orderByClause := range orderByClauses {
+		if isValidJsonField(Vehicle{}, orderByClause.Column) {
 			fetch = fetch.Order(
 				clause.OrderByColumn{
-					Column: clause.Column{Name: column.Column},
-					Desc:   column.IsDesc,
+					Column: clause.Column{Name: orderByClause.Column},
+					Desc:   orderByClause.IsDesc,
 				})
 		}
 	}
 
-	err := fetch.Offset(pagination.Offset).Limit(pagination.Limit).Find(&vehicles).Error
+	offset := fetch.Offset(pagination.Offset).Limit(pagination.Limit)
 
+	err := offset.Find(&vehicles).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errs.NewNotFoundError("Vehicles not found")
@@ -131,8 +130,13 @@ func ToDomainVehicles(vehicles []Vehicle) []domain.Vehicle {
 // Otherwise, it returns nil indicating that the pagination is valid.
 // Example usage: err := validatePagination(pagination)
 func validatePagination(pagination domain.Pagination) *errs.AppError {
-	if pagination.Limit < 1 || pagination.Limit > MaxLimit {
-		return errs.NewUnprocessableEntityError(fmt.Sprintf("invalid limit. The limit must be between 1 and %d", MaxLimit))
+	if pagination.Limit < 1 || pagination.Limit > domain.MaxLimit {
+		return errs.NewUnprocessableEntityError(
+			fmt.Sprintf("invalid limit. The limit must be between 1 and %d",
+				domain.MaxLimit,
+			),
+		)
+
 	}
 	if pagination.Offset < 0 {
 		return errs.NewUnprocessableEntityError("invalid offset. The offset must be greater than 0")
