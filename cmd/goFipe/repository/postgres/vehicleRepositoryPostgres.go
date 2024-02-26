@@ -108,7 +108,7 @@ func ToDomainVehicles(vehicles []Vehicle) []domain.Vehicle {
 	var domainVehicles []domain.Vehicle
 
 	for _, vehicle := range vehicles {
-		fipeCode, _ := strconv.Atoi(strings.Replace("-", vehicle.FipeCode, "", 1))
+		fipeCode, _ := strconv.Atoi(strings.Replace(vehicle.FipeCode, "-", "", -1))
 
 		domainVehicles = append(domainVehicles,
 			domain.Vehicle{
