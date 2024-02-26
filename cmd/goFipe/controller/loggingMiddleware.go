@@ -62,7 +62,7 @@ func LoggingMiddleware() func(http.Handler) http.Handler {
 			next.ServeHTTP(wrapped, r)
 			logger.Info("Request completed",
 				logger.Int("status", wrapped.status),
-				logger.String("body", wrapped.body.String()),
+				// logger.String("body", wrapped.body.String()),
 				logger.String("method", r.Method),
 				logger.String("path", r.URL.EscapedPath()),
 				logger.String("duration", time.Since(start).String()),
