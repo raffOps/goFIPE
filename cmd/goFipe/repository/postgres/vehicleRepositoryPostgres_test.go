@@ -6,11 +6,11 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 	postgres2 "github.com/raffops/gofipe/cmd/goFipe/database/postgres"
 	"github.com/raffops/gofipe/cmd/goFipe/logger"
-	"github.com/raffops/gofipe/cmd/goFipe/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
@@ -122,11 +122,6 @@ func Test_validatePagination(t *testing.T) {
 }
 
 func TestMain(m *testing.M) {
-	errEnvVariables := utils.LoadEnvVariables()
-	if errEnvVariables != nil {
-		logger.Fatal(errEnvVariables.Message)
-	}
-
 	var errPool error
 	pool, errPool := dockertest.NewPool("")
 	if errPool != nil {
@@ -267,10 +262,11 @@ func insertVehiclesOnDB(conn *gorm.DB) ([]Vehicle, []domain.Vehicle) {
 	domainVehicles := domain.GetDomainVehiclesExamples()
 	var vehicles []Vehicle
 	for _, domainVehicle := range domainVehicles {
+		fipeCode := strconv.Itoa(domainVehicle.FipeCode)
 		vehicle := Vehicle{
 			Year:           domainVehicle.Year,
 			Month:          domainVehicle.Month,
-			FipeCode:       domainVehicle.FipeCode,
+			FipeCode:       fipeCode,
 			Brand:          domainVehicle.Brand,
 			VehicleModel:   domainVehicle.Model,
 			YearModel:      domainVehicle.YearModel,
@@ -385,7 +381,7 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 					{
 						Column:   "fipe_code",
 						Operator: "=",
-						Value:    1,
+						Value:    "1",
 					},
 				},
 				orderBy: []domain.OrderByClause{
@@ -409,7 +405,7 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 					{
 						Column:   "fipe_code",
 						Operator: "=",
-						Value:    111111111,
+						Value:    "76576",
 					},
 				},
 				orderBy:    []domain.OrderByClause{},

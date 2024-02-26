@@ -11,7 +11,6 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
-	"github.com/raffops/gofipe/cmd/goFipe/logger"
 	mock_port "github.com/raffops/gofipe/cmd/goFipe/mocks"
 	"github.com/raffops/gofipe/cmd/goFipe/port"
 	"github.com/raffops/gofipe/cmd/goFipe/utils"
@@ -22,15 +21,6 @@ func getMockVehicleService(t *testing.T) (*mock_port.MockVehicleService, *gomock
 	ctrl := gomock.NewController(t)
 	mockVehicleService := mock_port.NewMockVehicleService(ctrl)
 	return mockVehicleService, ctrl
-}
-
-func TestMain(m *testing.M) {
-	err := utils.LoadEnvVariables()
-	if err != nil {
-		logger.Fatal(err.Message)
-	}
-	exitCode := m.Run()
-	os.Exit(exitCode)
 }
 
 func TestNewHandler(t *testing.T) {
