@@ -74,16 +74,16 @@ func (m *MockVehicleRepository) EXPECT() *MockVehicleRepositoryMockRecorder {
 }
 
 // GetVehicle mocks base method.
-func (m *MockVehicleRepository) GetVehicle(conditions []domain.WhereClause, orderBy []domain.OrderByClause, pagination domain.Pagination) ([]domain.Vehicle, *errs.AppError) {
+func (m *MockVehicleRepository) GetVehicle(whereClauses []domain.WhereClause, orderByClauses []domain.OrderByClause, pagination domain.Pagination) ([]domain.Vehicle, *errs.AppError) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetVehicle", conditions, orderBy, pagination)
+	ret := m.ctrl.Call(m, "GetVehicle", whereClauses, orderByClauses, pagination)
 	ret0, _ := ret[0].([]domain.Vehicle)
 	ret1, _ := ret[1].(*errs.AppError)
 	return ret0, ret1
 }
 
 // GetVehicle indicates an expected call of GetVehicle.
-func (mr *MockVehicleRepositoryMockRecorder) GetVehicle(conditions, orderBy, pagination interface{}) *gomock.Call {
+func (mr *MockVehicleRepositoryMockRecorder) GetVehicle(whereClauses, orderByClauses, pagination interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVehicle", reflect.TypeOf((*MockVehicleRepository)(nil).GetVehicle), conditions, orderBy, pagination)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVehicle", reflect.TypeOf((*MockVehicleRepository)(nil).GetVehicle), whereClauses, orderByClauses, pagination)
 }
