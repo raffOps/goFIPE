@@ -59,8 +59,12 @@ func (h VehicleHandler) Get(w http.ResponseWriter, r *http.Request) {
 	for _, vehicle := range vehicles {
 		responseVehicles = append(responseVehicles, dto.VehicleResponseFromDomain(vehicle))
 	}
+	err = json.NewEncoder(w).Encode(responseVehicles)
+	if err != nil {
+		http.Error(w, "Erro ao serializar resposta", http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(responseVehicles)
 }
 
 func handleWhereParameter(whereString string) (map[string]string, *errs.AppError) {
@@ -69,22 +73,24 @@ func handleWhereParameter(whereString string) (map[string]string, *errs.AppError
 	}
 
 	where := map[string]string{}
-	for _, split := range strings.Split(whereString, ",") {
+	for index, split := range strings.Split(whereString, ",") {
 		split = strings.TrimSpace(split)
 		if len(split) == 0 {
-			return nil, errs.NewBadRequestError(fmt.Sprintf("Clausula Where invalida. %s. Clausula where deve ser no formato 'key:value'", split))
+			return nil, errs.NewBadRequestError(
+				fmt.Sprintf("Clausula where %d deve ser no formato 'key:value'", index),
+			)
 		}
 
 		keyValue := strings.Split(split, ":")
 		if len(keyValue) != 2 {
 			return nil, errs.NewBadRequestError(
-				fmt.Sprintf("Clausula Where invalida. %s. Clausula where deve ser no formato 'key:value'", split),
+				fmt.Sprintf("Clausula where %d deve ser no formato 'key:value'", index),
 			)
 		}
 
 		if keyValue[0] == "" || keyValue[1] == "" {
 			return nil, errs.NewBadRequestError(
-				fmt.Sprintf("Clausula Where invalida. %s. Clausula where deve ser no formato 'key:value'", split),
+				fmt.Sprintf("Clausula where %d deve ser no formato 'key:value'", index),
 			)
 		}
 
@@ -98,26 +104,27 @@ func handleWhereParameter(whereString string) (map[string]string, *errs.AppError
 
 func handleOrderByParameter(orderByString string) (map[string]bool, *errs.AppError) {
 	if len(strings.TrimSpace(orderByString)) == 0 {
-		return nil, errs.NewBadRequestError("Campo OrderBy deve possuir no minimo 1 clausula")
+		return nil, errs.NewBadRequestError("Campo order deve possuir no minimo 1 clausula")
 	}
 
 	orderBy := map[string]bool{}
-	for _, split := range strings.Split(orderByString, ",") {
+	for index, split := range strings.Split(orderByString, ",") {
 		split = strings.TrimSpace(split)
 		if len(split) == 0 {
-			return nil, errs.NewBadRequestError(fmt.Sprintf("Clausula OrderBy invalida. %s. Clausula where deve ser no formato 'key:value'", split))
+			return nil, errs.NewBadRequestError(
+				fmt.Sprintf("Clausula order %d deve ser no formato 'key:value'", index))
 		}
 
 		keyValue := strings.Split(split, ":")
 		if len(keyValue) != 2 {
 			return nil, errs.NewBadRequestError(
-				fmt.Sprintf("Clausula OrderBy invalida. %s. Clausula where deve ser no formato 'key:value'", split),
+				fmt.Sprintf("Clausula order %d deve ser no formato 'key:value'", index),
 			)
 		}
 
 		if keyValue[0] == "" || keyValue[1] == "" {
 			return nil, errs.NewBadRequestError(
-				fmt.Sprintf("Clausula OrderBy invalida. %s. Clausula where deve ser no formato 'key:value'", split),
+				fmt.Sprintf("Clausula order %d deve ser no formato 'key:value'", index),
 			)
 		}
 
@@ -126,18 +133,13 @@ func handleOrderByParameter(orderByString string) (map[string]bool, *errs.AppErr
 
 		if value != "asc" && value != "desc" {
 			return nil, errs.NewBadRequestError(
-				fmt.Sprintf("Clausula OrderBy invalida. %s. Value deve ser asc ou desc", split),
+				fmt.Sprintf("Clausula order %d: Value deve ser asc ou desc", index),
 			)
 		}
-
 		if value == "desc" {
 			orderBy[key] = true
-		} else if value == "asc" {
-			orderBy[key] = false
 		} else {
-			return nil, errs.NewBadRequestError(
-				fmt.Sprintf("Clausula OrderBy invalida. %s. Value deve ser asc ou desc", split),
-			)
+			orderBy[key] = false
 		}
 	}
 

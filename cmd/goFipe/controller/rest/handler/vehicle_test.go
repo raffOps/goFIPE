@@ -11,15 +11,15 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
-	mock_port "github.com/raffops/gofipe/cmd/goFipe/mocks"
+	mockPort "github.com/raffops/gofipe/cmd/goFipe/mocks"
 	"github.com/raffops/gofipe/cmd/goFipe/port"
 	"github.com/raffops/gofipe/cmd/goFipe/utils"
 	"github.com/stretchr/testify/assert"
 )
 
-func getMockVehicleService(t *testing.T) (*mock_port.MockVehicleService, *gomock.Controller) {
+func getMockVehicleService(t *testing.T) (*mockPort.MockVehicleService, *gomock.Controller) {
 	ctrl := gomock.NewController(t)
-	mockVehicleService := mock_port.NewMockVehicleService(ctrl)
+	mockVehicleService := mockPort.NewMockVehicleService(ctrl)
 	return mockVehicleService, ctrl
 }
 
@@ -53,7 +53,7 @@ func TestNewHandler(t *testing.T) {
 
 func TestVehicleHandler_Get(t *testing.T) {
 	type Dependencies struct {
-		vehicleService func(service *mock_port.MockVehicleService)
+		vehicleService func(service *mockPort.MockVehicleService)
 	}
 
 	vehiclesExamples := domain.GetDomainVehiclesExamples()
@@ -68,17 +68,17 @@ func TestVehicleHandler_Get(t *testing.T) {
 		{
 			name: "where by fipe_code",
 			args: map[string]interface{}{
-				"where":  "fipe_code:1",
+				"where":  "fipe_code:111111-1",
 				"order":  "year:asc",
 				"offset": "0",
 				"limit":  "1",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {
+				vehicleService: func(service *mockPort.MockVehicleService) {
 					service.EXPECT().
 						GetVehicle(
 							map[string]string{
-								"fipe_code": "1",
+								"fipe_code": "111111-1",
 							},
 							map[string]bool{"year": false},
 							0,
@@ -89,7 +89,7 @@ func TestVehicleHandler_Get(t *testing.T) {
 					)
 				},
 			},
-			wantBody:       "[{\"ano\":2021,\"mes\":7,\"fipe_code\":1,\"marca\":\"Acura\",\"modelo\":\"Integra GS 1.8\",\"ano_modelo\":\"1992 Gasolina\",\"autenticacao\":\"1\",\"valor_medio\":700}]\n",
+			wantBody:       "[{\"ano\":2021,\"mes\":7,\"fipe_code\":\"111111-1\",\"marca\":\"Acura\",\"modelo\":\"Integra GS 1.8\",\"ano_modelo\":\"1992 Gasolina\",\"autenticacao\":\"1\",\"valor_medio\":700}]\n",
 			wantStatusCode: http.StatusOK,
 		},
 		{
@@ -101,7 +101,7 @@ func TestVehicleHandler_Get(t *testing.T) {
 				"limit":  "1",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {
+				vehicleService: func(service *mockPort.MockVehicleService) {
 					service.EXPECT().
 						GetVehicle(
 							map[string]string{
@@ -117,7 +117,7 @@ func TestVehicleHandler_Get(t *testing.T) {
 					)
 				},
 			},
-			wantBody:       "[{\"ano\":2021,\"mes\":7,\"fipe_code\":1,\"marca\":\"Acura\",\"modelo\":\"Integra GS 1.8\",\"ano_modelo\":\"1992 Gasolina\",\"autenticacao\":\"1\",\"valor_medio\":700}]\n",
+			wantBody:       "[{\"ano\":2021,\"mes\":7,\"fipe_code\":\"111111-1\",\"marca\":\"Acura\",\"modelo\":\"Integra GS 1.8\",\"ano_modelo\":\"1992 Gasolina\",\"autenticacao\":\"1\",\"valor_medio\":700}]\n",
 			wantStatusCode: http.StatusOK,
 		},
 		{
@@ -129,9 +129,9 @@ func TestVehicleHandler_Get(t *testing.T) {
 				"limit":  "1",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {},
+				vehicleService: func(service *mockPort.MockVehicleService) {},
 			},
-			wantBody:       "Clausula Where invalida. fipe_code:. Clausula where deve ser no formato 'key:value'\n",
+			wantBody:       "Clausula where 0 deve ser no formato 'key:value'\n",
 			wantStatusCode: http.StatusBadRequest,
 		},
 		{
@@ -143,7 +143,7 @@ func TestVehicleHandler_Get(t *testing.T) {
 				"limit":  "1",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {},
+				vehicleService: func(service *mockPort.MockVehicleService) {},
 			},
 			wantBody:       "Campo where deve possuir no minimo 1 clausula\n",
 			wantStatusCode: http.StatusBadRequest,
@@ -157,9 +157,9 @@ func TestVehicleHandler_Get(t *testing.T) {
 				"limit":  "1",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {},
+				vehicleService: func(service *mockPort.MockVehicleService) {},
 			},
-			wantBody:       "Clausula OrderBy invalida. year:invalid. Value deve ser asc ou desc\n",
+			wantBody:       "Clausula order 0: Value deve ser asc ou desc\n",
 			wantStatusCode: http.StatusBadRequest,
 		},
 		{
@@ -171,9 +171,9 @@ func TestVehicleHandler_Get(t *testing.T) {
 				"limit":  "1",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {},
+				vehicleService: func(service *mockPort.MockVehicleService) {},
 			},
-			wantBody:       "Clausula OrderBy invalida. month:invalid. Value deve ser asc ou desc\n",
+			wantBody:       "Clausula order 1: Value deve ser asc ou desc\n",
 			wantStatusCode: http.StatusBadRequest,
 		},
 		{
@@ -185,9 +185,9 @@ func TestVehicleHandler_Get(t *testing.T) {
 				"limit":  "1",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {},
+				vehicleService: func(service *mockPort.MockVehicleService) {},
 			},
-			wantBody:       "Clausula OrderBy invalida. month:. Clausula where deve ser no formato 'key:value'\n",
+			wantBody:       "Clausula order 1 deve ser no formato 'key:value'\n",
 			wantStatusCode: http.StatusBadRequest,
 		},
 		{
@@ -199,9 +199,9 @@ func TestVehicleHandler_Get(t *testing.T) {
 				"limit":  "1",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {},
+				vehicleService: func(service *mockPort.MockVehicleService) {},
 			},
-			wantBody:       "Campo OrderBy deve possuir no minimo 1 clausula\n",
+			wantBody:       "Campo order deve possuir no minimo 1 clausula\n",
 			wantStatusCode: http.StatusBadRequest,
 		},
 		{
@@ -213,7 +213,7 @@ func TestVehicleHandler_Get(t *testing.T) {
 				"limit":  "1",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {},
+				vehicleService: func(service *mockPort.MockVehicleService) {},
 			},
 			wantBody:       "Offset deve ser um numero inteiro\n",
 			wantStatusCode: http.StatusBadRequest,
@@ -227,7 +227,7 @@ func TestVehicleHandler_Get(t *testing.T) {
 				"limit":  "invalid",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {},
+				vehicleService: func(service *mockPort.MockVehicleService) {},
 			},
 			wantBody:       "Limit deve ser um numero inteiro\n",
 			wantStatusCode: http.StatusBadRequest,
@@ -241,7 +241,7 @@ func TestVehicleHandler_Get(t *testing.T) {
 				"limit":  "1",
 			},
 			dependencies: Dependencies{
-				vehicleService: func(service *mock_port.MockVehicleService) {
+				vehicleService: func(service *mockPort.MockVehicleService) {
 					service.EXPECT().
 						GetVehicle(
 							map[string]string{
@@ -261,12 +261,18 @@ func TestVehicleHandler_Get(t *testing.T) {
 			wantStatusCode: http.StatusInternalServerError,
 		},
 	}
+	appHost := os.Getenv("APP_HOST")
+	appPort := os.Getenv("APP_PORT")
+	if appHost == "" || appPort == "" {
+		t.Fatal("APP_HOST or APP_PORT environment variable is not set")
+	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockVehicleService, ctrl := getMockVehicleService(t)
 			t.Cleanup(ctrl.Finish)
-			path := fmt.Sprintf("%s:%s/vehicles", os.Getenv("APP_HOST"), os.Getenv("APP_PORT"))
+			t.Logf(appHost, appPort)
+			path := fmt.Sprintf("%s:%s/vehicles", appHost, appPort)
 			urlEncoded := utils.EncodeUrl(path, tt.args)
 			req, err := http.NewRequest("GET", urlEncoded, nil)
 			if err != nil {
@@ -286,61 +292,52 @@ func TestVehicleHandler_Get(t *testing.T) {
 
 func Test_handleWhereParameter(t *testing.T) {
 	testCases := []struct {
-		name     string
-		input    string
-		expected map[string]string
-		isError  bool
+		name    string
+		input   string
+		want    map[string]string
+		wantErr *errs.AppError
 	}{
 		{
-			"Test normal use case",
-			"key1:value1,key2:value2",
-			map[string]string{
-				"key1": "value1",
-				"key2": "value2",
+			name:  "Normal use case",
+			input: "fipe_code:1,year:2021,month:7",
+			want: map[string]string{
+				"fipe_code": "1",
+				"year":      "2021",
+				"month":     "7",
 			},
-			false,
+			wantErr: nil,
 		},
 		{
-			"Test with abnormal case, clauses with invalid format",
-			"key1 value1,key2:value2",
-			nil,
-			true,
+			name:    "Invalid where clause",
+			input:   "fipe_code:1,year:2021,month",
+			want:    nil,
+			wantErr: errs.NewBadRequestError("Clausula where 2 deve ser no formato 'key:value'"),
 		},
 		{
-			"Test with abnormal case, empty clause",
-			"key1:,key2:value2",
-			nil,
-			true,
+			name:    "Empty where clause",
+			input:   "",
+			want:    nil,
+			wantErr: errs.NewBadRequestError("Campo where deve possuir no minimo 1 clausula"),
 		},
 		{
-			"Test without clauses",
-			"",
-			nil,
-			true,
+			name:    "Invalid where clause",
+			input:   "fipe_code:1,year:2021,month:",
+			want:    nil,
+			wantErr: errs.NewBadRequestError("Clausula where 2 deve ser no formato 'key:value'"),
+		},
+		{
+			name:    "Invalid where clause",
+			input:   "fipe_code:1,year:2021,month:7,",
+			want:    nil,
+			wantErr: errs.NewBadRequestError("Clausula where 3 deve ser no formato 'key:value'"),
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			got, err := handleWhereParameter(tc.input)
-
-			if (err != nil) != tc.isError {
-				t.Errorf("Expected error = %v, got %v", tc.isError, err)
-			}
-
-			if len(got) != len(tc.expected) {
-				t.Errorf("Expected = %v, got %v", tc.expected, got)
-			}
-
-			for k, v := range tc.expected {
-				if value, ok := got[k]; ok {
-					if value != v {
-						t.Errorf("Expected = %v, got %v", tc.expected, got)
-					}
-				} else {
-					t.Errorf("Expected = %v, got %v", tc.expected, got)
-				}
-			}
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			got, gotErr := handleWhereParameter(tt.input)
+			assert.Equalf(t, tt.want, got, "handleWhereParameter(%v)", tt.input)
+			assert.Equalf(t, tt.wantErr, gotErr, "handleWhereParameter(%v)", tt.input)
 		})
 	}
 }
@@ -367,28 +364,20 @@ func Test_handleOrderByParameter(t *testing.T) {
 			want1: nil,
 		},
 		{
-			name: "Test with abnormal case, invalid value",
+			name: "Test with abnormal case, clauses with invalid format",
 			args: args{
-				orderByString: "key1:asc,key2:invalid",
+				orderByString: "key1:asc,key2:desc,key3",
 			},
 			want:  nil,
-			want1: errs.NewBadRequestError("Clausula OrderBy invalida. key2:invalid. Value deve ser asc ou desc"),
+			want1: errs.NewBadRequestError("Clausula order 2 deve ser no formato 'key:value'"),
 		},
 		{
-			name: "Test with abnormal case, invalid format",
-			args: args{
-				orderByString: "key1:asc,key2",
-			},
-			want:  nil,
-			want1: errs.NewBadRequestError("Clausula OrderBy invalida. key2. Clausula where deve ser no formato 'key:value'"),
-		},
-		{
-			name: "Test with abnormal case, empty clause",
+			name: "Test with abnormal case, empty value",
 			args: args{
 				orderByString: "key1:asc,key2:",
 			},
 			want:  nil,
-			want1: errs.NewBadRequestError("Clausula OrderBy invalida. key2:. Clausula where deve ser no formato 'key:value'"),
+			want1: errs.NewBadRequestError("Clausula order 1 deve ser no formato 'key:value'"),
 		},
 		{
 			name: "Test without clauses",
@@ -396,7 +385,7 @@ func Test_handleOrderByParameter(t *testing.T) {
 				orderByString: "",
 			},
 			want:  nil,
-			want1: errs.NewBadRequestError("Campo OrderBy deve possuir no minimo 1 clausula"),
+			want1: errs.NewBadRequestError("Campo order deve possuir no minimo 1 clausula"),
 		},
 	}
 	for _, tt := range tests {

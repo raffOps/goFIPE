@@ -5,7 +5,7 @@ import "github.com/raffops/gofipe/cmd/goFipe/domain"
 type VehicleResponse struct {
 	Year           int     `json:"ano"`
 	Month          int     `json:"mes"`
-	FipeCode       int     `json:"fipe_code"`
+	FipeCode       string  `json:"fipe_code"`
 	Brand          string  `json:"marca"`
 	Model          string  `json:"modelo"`
 	YearModel      string  `json:"ano_modelo"`

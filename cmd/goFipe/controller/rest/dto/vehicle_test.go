@@ -20,7 +20,7 @@ func Test_vehicleResponseFromDomain(t *testing.T) {
 			args: args{vehicle: domain.Vehicle{
 				Year:           2021,
 				Month:          7,
-				FipeCode:       1,
+				FipeCode:       "1",
 				Brand:          "Acura",
 				Model:          "Integra GS 1.8",
 				YearModel:      "1992 Gasolina",
@@ -30,7 +30,7 @@ func Test_vehicleResponseFromDomain(t *testing.T) {
 			want: VehicleResponse{
 				Year:           2021,
 				Month:          7,
-				FipeCode:       1,
+				FipeCode:       "1",
 				Brand:          "Acura",
 				Model:          "Integra GS 1.8",
 				YearModel:      "1992 Gasolina",

@@ -20,10 +20,13 @@ func Start(vehicleService port.VehicleService) {
 
 	appHost := os.Getenv("APP_HOST")
 	appPort := os.Getenv("APP_PORT")
-	logger.Info("Starting server %s:%s", logger.String("host", appHost), logger.String("port", appPort))
-
 	loggedRouter := middleware.LoggingMiddleware()(router)
 
+	logger.Info(
+		"Started server",
+		logger.String("host", appHost),
+		logger.String("port", appPort),
+	)
 	err := http.ListenAndServe(
 		fmt.Sprintf("%s:%s", appHost, appPort),
 		loggedRouter,
@@ -43,7 +46,11 @@ func sanityCheck() {
 	}
 }
 
-func healthCheck(w http.ResponseWriter, r *http.Request) {
+func healthCheck(w http.ResponseWriter, _ *http.Request) {
+	_, err := w.Write([]byte("Ok"))
+	if err != nil {
+		http.Error(w, "Erro ao serializar resposta", http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Ok"))
 }
