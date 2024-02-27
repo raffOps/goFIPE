@@ -8,9 +8,18 @@ import (
 //go:generate mockgen -source port.go -destination ../mocks/mockVehicle.go
 
 type VehicleService interface {
-	GetVehicle(where map[string]string, orderBy map[string]bool, limit int, offset int) ([]domain.Vehicle, *errs.AppError)
+	GetVehicle(
+		where map[string]string,
+		orderBy map[string]bool,
+		limit int,
+		offset int,
+	) ([]domain.Vehicle, *errs.AppError)
 }
 
 type VehicleRepository interface {
-	GetVehicle(conditions []domain.WhereClause, orderBy []domain.OrderByClause, pagination domain.Pagination) ([]domain.Vehicle, *errs.AppError)
+	GetVehicle(
+		whereClauses []domain.WhereClause,
+		orderByClauses []domain.OrderByClause,
+		pagination domain.Pagination,
+	) ([]domain.Vehicle, *errs.AppError)
 }
