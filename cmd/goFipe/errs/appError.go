@@ -30,41 +30,6 @@ func NewUnexpectedError(message string) *AppError {
 func NewValidationError(message string) *AppError {
 	return &AppError{
 		Message: message,
-		Code:    http.StatusUnprocessableEntity,
-	}
-}
-
-func NewAuthenticationError(message string) *AppError {
-	return &AppError{
-		Message: message,
-		Code:    http.StatusUnauthorized,
-	}
-}
-
-func NewAuthorizationError(message string) *AppError {
-	return &AppError{
-		Message: message,
-		Code:    http.StatusForbidden,
-	}
-}
-
-func NewInvalidLimitError(message string) *AppError {
-	return &AppError{
-		Message: message,
-		Code:    http.StatusBadRequest,
-	}
-}
-
-func NewInvalidOffsetError(message string) *AppError {
-	return &AppError{
-		Message: message,
-		Code:    http.StatusBadRequest,
-	}
-}
-
-func NewInvalidColumnError(message string) *AppError {
-	return &AppError{
-		Message: message,
 		Code:    http.StatusBadRequest,
 	}
 }
@@ -73,13 +38,6 @@ func NewUnprocessableEntityError(message string) *AppError {
 	return &AppError{
 		Message: message,
 		Code:    http.StatusBadRequest,
-	}
-}
-
-func NewNotImplementedError(message string) *AppError {
-	return &AppError{
-		Message: message,
-		Code:    http.StatusNotImplemented,
 	}
 }
 
