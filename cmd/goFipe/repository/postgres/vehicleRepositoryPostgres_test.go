@@ -10,7 +10,6 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"os"
-	"strconv"
 	"testing"
 
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
@@ -262,11 +261,10 @@ func insertVehiclesOnDB(conn *gorm.DB) ([]Vehicle, []domain.Vehicle) {
 	domainVehicles := domain.GetDomainVehiclesExamples()
 	var vehicles []Vehicle
 	for _, domainVehicle := range domainVehicles {
-		fipeCode := strconv.Itoa(domainVehicle.FipeCode)
 		vehicle := Vehicle{
 			Year:           domainVehicle.Year,
 			Month:          domainVehicle.Month,
-			FipeCode:       fipeCode,
+			FipeCode:       domainVehicle.FipeCode,
 			Brand:          domainVehicle.Brand,
 			VehicleModel:   domainVehicle.Model,
 			YearModel:      domainVehicle.YearModel,
@@ -291,7 +289,10 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 
 	conn := postgres2.GetPostgresConnection()
 	t.Cleanup(func() { postgres2.ClosePostgresConnection(conn) })
-	conn.AutoMigrate(&Vehicle{})
+	err := conn.AutoMigrate(&Vehicle{})
+	if err != nil {
+		t.Fatal(err)
+	}
 	_, domainVehiclesOnDb := insertVehiclesOnDB(conn)
 
 	tests := []struct {
@@ -374,14 +375,14 @@ func TestVehicleRepositoryPostgres_GetVehicle(t *testing.T) {
 			wantError: nil,
 		},
 		{
-			name:   "fipe_code equal to 1",
+			name:   "fipe_code equal to 111111-1",
 			fields: fields{conn: conn},
 			args: args{
 				conditions: []domain.WhereClause{
 					{
 						Column:   "fipe_code",
 						Operator: "=",
-						Value:    "1",
+						Value:    "111111-1",
 					},
 				},
 				orderBy: []domain.OrderByClause{
