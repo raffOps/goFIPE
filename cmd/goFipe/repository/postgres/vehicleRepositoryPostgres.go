@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"reflect"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
@@ -46,14 +45,14 @@ func NewVehicleRepositoryPostgres(conn *gorm.DB) *VehicleRepositoryPostgres {
 // If an error occurs during the fetch operation, it returns the error.
 // Otherwise, it converts the fetched vehicles to domain.Vehicle objects using the ToDomainVehicles function and returns them along with a nil error.
 func (v VehicleRepositoryPostgres) GetVehicle(
-	conditions []domain.WhereClause,
-	orderBy []domain.OrderByClause,
+	whereClauses []domain.WhereClause,
+	orderByClauses []domain.OrderByClause,
 	pagination domain.Pagination) ([]domain.Vehicle, *errs.AppError) {
 	if err := validatePagination(pagination); err != nil {
 		return nil, err
 	}
 
-	vehicles, err := fetchVehiclesFromDb(v, conditions, orderBy, pagination)
+	vehicles, err := fetchVehiclesFromDb(v, whereClauses, orderByClauses, pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -108,13 +107,11 @@ func ToDomainVehicles(vehicles []Vehicle) []domain.Vehicle {
 	var domainVehicles []domain.Vehicle
 
 	for _, vehicle := range vehicles {
-		fipeCode, _ := strconv.Atoi(strings.Replace(vehicle.FipeCode, "-", "", -1))
-
 		domainVehicles = append(domainVehicles,
 			domain.Vehicle{
 				Year:           vehicle.Year,
 				Month:          vehicle.Month,
-				FipeCode:       fipeCode,
+				FipeCode:       vehicle.FipeCode,
 				Brand:          vehicle.Brand,
 				Model:          vehicle.VehicleModel,
 				YearModel:      vehicle.YearModel,
