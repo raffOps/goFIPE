@@ -162,7 +162,7 @@ func TearDown(pool *dockertest.Pool, network *dockertest.Network, resource *dock
 }
 
 func startPostgres(pool *dockertest.Pool, network *dockertest.Network) (*dockertest.Resource, error) {
-	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
+	resource, _ := pool.RunWithOptions(&dockertest.RunOptions{
 		Name:       "postgres",
 		Repository: "postgres",
 		Tag:        "13",
@@ -178,7 +178,7 @@ func startPostgres(pool *dockertest.Pool, network *dockertest.Network) (*dockert
 		},
 	})
 
-	err = testPostgresConnection(pool)
+	err := testPostgresConnection(pool)
 
 	if err != nil {
 		return nil, err

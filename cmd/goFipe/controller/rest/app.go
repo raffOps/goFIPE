@@ -3,8 +3,8 @@ package rest
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/raffops/gofipe/cmd/goFipe/controller"
 	"github.com/raffops/gofipe/cmd/goFipe/controller/rest/handler"
+	"github.com/raffops/gofipe/cmd/goFipe/controller/rest/middleware"
 	"github.com/raffops/gofipe/cmd/goFipe/logger"
 	"github.com/raffops/gofipe/cmd/goFipe/port"
 	"net/http"
@@ -22,7 +22,7 @@ func Start(vehicleService port.VehicleService) {
 	appPort := os.Getenv("APP_PORT")
 	logger.Info("Starting server %s:%s", logger.String("host", appHost), logger.String("port", appPort))
 
-	loggedRouter := controller.LoggingMiddleware()(router)
+	loggedRouter := middleware.LoggingMiddleware()(router)
 
 	err := http.ListenAndServe(
 		fmt.Sprintf("%s:%s", appHost, appPort),

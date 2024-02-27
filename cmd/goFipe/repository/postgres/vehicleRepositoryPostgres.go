@@ -22,7 +22,7 @@ type Vehicle struct {
 	Year           int     `gorm:"index:idx_year" json:"year,omitempty"`
 	Month          int     `gorm:"index:idx_month" json:"month,omitempty"`
 	FipeCode       string  `gorm:"index:idx_fipe_code" json:"fipe_code,omitempty"`
-	Brand          string  `json:"brand" json:"brand,omitempty"`
+	Brand          string  `json:"brand,omitempty"`
 	VehicleModel   string  `json:"vehicle_model,omitempty"`
 	YearModel      string  `json:"year_model,omitempty"`
 	Authentication string  `json:"authentication,omitempty"`
