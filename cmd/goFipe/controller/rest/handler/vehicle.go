@@ -131,15 +131,15 @@ func handleOrderByParameter(orderByString string) (map[string]bool, *errs.AppErr
 		key := strings.TrimSpace(keyValue[0])
 		value := strings.TrimSpace(keyValue[1])
 
-		if value != "asc" && value != "desc" {
+		switch value {
+		case "asc":
+			orderBy[key] = false
+		case "desc":
+			orderBy[key] = true
+		default:
 			return nil, errs.NewBadRequestError(
 				fmt.Sprintf("Clausula order %d: Value deve ser asc ou desc", index),
 			)
-		}
-		if value == "desc" {
-			orderBy[key] = true
-		} else {
-			orderBy[key] = false
 		}
 	}
 
