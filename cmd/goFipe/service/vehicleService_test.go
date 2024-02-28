@@ -2,13 +2,13 @@ package service
 
 import (
 	"fmt"
+	"github.com/raffops/gofipe/cmd/goFipe/domain/ports"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
+	mockPort "github.com/raffops/gofipe/cmd/goFipe/domain/mocks"
 	"github.com/raffops/gofipe/cmd/goFipe/errs"
-	mockPort "github.com/raffops/gofipe/cmd/goFipe/mocks"
-	"github.com/raffops/gofipe/cmd/goFipe/port"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,7 +23,7 @@ func TestNewVehicleService(t *testing.T) {
 	t.Cleanup(ctrl.Finish)
 
 	type args struct {
-		vehicleRepo port.VehicleRepository
+		vehicleRepo ports.VehicleRepository
 	}
 
 	tests := []struct {

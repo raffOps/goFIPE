@@ -3,18 +3,18 @@ package service
 import (
 	"fmt"
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
+	"github.com/raffops/gofipe/cmd/goFipe/domain/ports"
 	"github.com/raffops/gofipe/cmd/goFipe/errs"
 	"github.com/raffops/gofipe/cmd/goFipe/logger"
-	"github.com/raffops/gofipe/cmd/goFipe/port"
 	"slices"
 	"strconv"
 )
 
 type VehicleService struct {
-	vehicleRepo port.VehicleRepository
+	vehicleRepo ports.VehicleRepository
 }
 
-func NewVehicleService(vehicleRepo port.VehicleRepository) VehicleService {
+func NewVehicleService(vehicleRepo ports.VehicleRepository) VehicleService {
 	return VehicleService{vehicleRepo: vehicleRepo}
 }
 

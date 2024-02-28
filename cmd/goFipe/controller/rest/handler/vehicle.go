@@ -4,19 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/raffops/gofipe/cmd/goFipe/controller/rest/dto"
+	"github.com/raffops/gofipe/cmd/goFipe/domain/ports"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/raffops/gofipe/cmd/goFipe/errs"
-	"github.com/raffops/gofipe/cmd/goFipe/port"
 )
 
 type VehicleHandler struct {
-	vehicleService port.VehicleService
+	vehicleService ports.VehicleService
 }
 
-func NewVehicleHandler(vehicleService port.VehicleService) VehicleHandler {
+func NewVehicleHandler(vehicleService ports.VehicleService) VehicleHandler {
 	return VehicleHandler{vehicleService: vehicleService}
 }
 

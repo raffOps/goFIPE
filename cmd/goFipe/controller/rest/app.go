@@ -5,13 +5,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/raffops/gofipe/cmd/goFipe/controller/rest/handler"
 	"github.com/raffops/gofipe/cmd/goFipe/controller/rest/middleware"
+	"github.com/raffops/gofipe/cmd/goFipe/domain/ports"
 	"github.com/raffops/gofipe/cmd/goFipe/logger"
-	"github.com/raffops/gofipe/cmd/goFipe/port"
 	"net/http"
 	"os"
 )
 
-func Start(vehicleService port.VehicleService) {
+func Start(vehicleService ports.VehicleService) {
 	sanityCheck()
 	router := mux.NewRouter()
 	vehicleHandler := handler.NewVehicleHandler(vehicleService)

@@ -1,11 +1,11 @@
-package port
+package ports
 
 import (
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
 	"github.com/raffops/gofipe/cmd/goFipe/errs"
 )
 
-//go:generate mockgen -source port.go -destination ../mocks/mockVehicle.go
+//go:generate mockgen -source ports.go -destination ../mocks/mockVehicle.go
 
 type VehicleService interface {
 	GetVehicle(

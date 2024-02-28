@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/raffops/gofipe/cmd/goFipe/domain/ports"
 	"github.com/raffops/gofipe/cmd/goFipe/errs"
 	"net/http"
 	"net/http/httptest"
@@ -11,8 +12,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/raffops/gofipe/cmd/goFipe/domain"
-	mockPort "github.com/raffops/gofipe/cmd/goFipe/mocks"
-	"github.com/raffops/gofipe/cmd/goFipe/port"
+	mockPort "github.com/raffops/gofipe/cmd/goFipe/domain/mocks"
 	"github.com/raffops/gofipe/cmd/goFipe/utils"
 	"github.com/stretchr/testify/assert"
 )
@@ -25,7 +25,7 @@ func getMockVehicleService(t *testing.T) (*mockPort.MockVehicleService, *gomock.
 
 func TestNewHandler(t *testing.T) {
 	type args struct {
-		vehicleService port.VehicleService
+		vehicleService ports.VehicleService
 	}
 
 	mockVehicleService, ctrl := getMockVehicleService(t)
