@@ -13,7 +13,7 @@ func Test_vehicleResponseFromDomain(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want VehicleResponse
+		want GetVehicleResponse
 	}{
 		{
 			name: "Single test",
@@ -27,7 +27,7 @@ func Test_vehicleResponseFromDomain(t *testing.T) {
 				Authentication: "1",
 				MeanValue:      700,
 			}},
-			want: VehicleResponse{
+			want: GetVehicleResponse{
 				Year:           2021,
 				Month:          7,
 				FipeCode:       "1",

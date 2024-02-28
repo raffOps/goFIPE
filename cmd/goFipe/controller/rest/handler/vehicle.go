@@ -16,7 +16,7 @@ type VehicleHandler struct {
 	vehicleService port.VehicleService
 }
 
-func NewHandler(vehicleService port.VehicleService) VehicleHandler {
+func NewVehicleHandler(vehicleService port.VehicleService) VehicleHandler {
 	return VehicleHandler{vehicleService: vehicleService}
 }
 
@@ -55,7 +55,7 @@ func (h VehicleHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var responseVehicles []dto.VehicleResponse
+	var responseVehicles []dto.GetVehicleResponse
 	for _, vehicle := range vehicles {
 		responseVehicles = append(responseVehicles, dto.VehicleResponseFromDomain(vehicle))
 	}

@@ -44,8 +44,8 @@ func TestNewHandler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewHandler(tt.args.vehicleService); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewHandler() = %v, want %v", got, tt.want)
+			if got := NewVehicleHandler(tt.args.vehicleService); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewVehicleHandler() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -347,10 +347,10 @@ func Test_handleOrderByParameter(t *testing.T) {
 		orderByString string
 	}
 	tests := []struct {
-		name  string
-		args  args
-		want  map[string]bool
-		want1 *errs.AppError
+		name    string
+		args    args
+		want    map[string]bool
+		wantErr *errs.AppError
 	}{
 		{
 			name: "Test normal use case",
@@ -361,38 +361,38 @@ func Test_handleOrderByParameter(t *testing.T) {
 				"key1": false,
 				"key2": true,
 			},
-			want1: nil,
+			wantErr: nil,
 		},
 		{
 			name: "Test with abnormal case, clauses with invalid format",
 			args: args{
 				orderByString: "key1:asc,key2:desc,key3",
 			},
-			want:  nil,
-			want1: errs.NewBadRequestError("Clausula order 2 deve ser no formato 'key:value'"),
+			want:    nil,
+			wantErr: errs.NewBadRequestError("Clausula order 2 deve ser no formato 'key:value'"),
 		},
 		{
 			name: "Test with abnormal case, empty value",
 			args: args{
 				orderByString: "key1:asc,key2:",
 			},
-			want:  nil,
-			want1: errs.NewBadRequestError("Clausula order 1 deve ser no formato 'key:value'"),
+			want:    nil,
+			wantErr: errs.NewBadRequestError("Clausula order 1 deve ser no formato 'key:value'"),
 		},
 		{
 			name: "Test without clauses",
 			args: args{
 				orderByString: "",
 			},
-			want:  nil,
-			want1: errs.NewBadRequestError("Campo order deve possuir no minimo 1 clausula"),
+			want:    nil,
+			wantErr: errs.NewBadRequestError("Campo order deve possuir no minimo 1 clausula"),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, got1 := handleOrderByParameter(tt.args.orderByString)
 			assert.Equalf(t, tt.want, got, "handleOrderByParameter(%v)", tt.args.orderByString)
-			assert.Equalf(t, tt.want1, got1, "handleOrderByParameter(%v)", tt.args.orderByString)
+			assert.Equalf(t, tt.wantErr, got1, "handleOrderByParameter(%v)", tt.args.orderByString)
 		})
 	}
 }

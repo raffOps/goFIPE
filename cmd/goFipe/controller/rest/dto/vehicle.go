@@ -2,7 +2,7 @@ package dto
 
 import "github.com/raffops/gofipe/cmd/goFipe/domain"
 
-type VehicleResponse struct {
+type GetVehicleResponse struct {
 	Year           int     `json:"ano"`
 	Month          int     `json:"mes"`
 	FipeCode       string  `json:"fipe_code"`
@@ -13,8 +13,8 @@ type VehicleResponse struct {
 	MeanValue      float32 `json:"valor_medio"`
 }
 
-func VehicleResponseFromDomain(vehicle domain.Vehicle) VehicleResponse {
-	return VehicleResponse{
+func VehicleResponseFromDomain(vehicle domain.Vehicle) GetVehicleResponse {
+	return GetVehicleResponse{
 		Year:           vehicle.Year,
 		Month:          vehicle.Month,
 		FipeCode:       vehicle.FipeCode,

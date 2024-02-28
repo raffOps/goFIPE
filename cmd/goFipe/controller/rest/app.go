@@ -14,7 +14,7 @@ import (
 func Start(vehicleService port.VehicleService) {
 	sanityCheck()
 	router := mux.NewRouter()
-	vehicleHandler := handler.NewHandler(vehicleService)
+	vehicleHandler := handler.NewVehicleHandler(vehicleService)
 	router.HandleFunc("/health-check", healthCheck).Methods("GET")
 	router.HandleFunc("/vehicles", vehicleHandler.Get).Methods("GET")
 
